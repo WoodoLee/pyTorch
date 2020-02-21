@@ -21,16 +21,16 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torch.autograd import Variable
-import modules
+
 color = pc.bcolors()
 
-file1 = "../../../../data/eDepPhi/g2wdEdep10k_1.root"
-file2 = "../../../../data/eDepPhi/g2wdEdep10k_2.root"
+file1 = "../../../../../data/eDepPhiVid/g2wd10k_1.root"
+file2 = "../../../../../data/eDepPhiVid/g2wd10k_2.root"
 
 rCut = 0
 
 momCutmin = 200
-momCutmax = 275
+momCutmax = 201
 
 def selectData(file, momCutmin, momCutmax, rCut, labelID):
     LabelData = modules.momLabel(file, momCutmin, momCutmax, rCut)
@@ -38,8 +38,7 @@ def selectData(file, momCutmin, momCutmax, rCut, labelID):
     print(color.GREEN + "..", len(LabelData["label"]), "- s track is in this label", color.ENDC )
     return LabelDataSel
 
-
-dataTrkTrS,dataTrkTeS = moduleRNN.momRCut(file1, file2,  momCutmin, momCutmax, rCut)
+dataTrk1, dataTrk2 = moduleRNN.momRCut(file1, file2, momCutmin, momCutmax, rCut)
 
 def selectRanSample(data, number):
     eveid = data.drop_duplicates('eventID')['eventID']
@@ -50,86 +49,90 @@ def selectRanSample(data, number):
     return dataTrkSampleLabel
 
 sampleN = 2
-sampleTr = selectRanSample(dataTrkTrS, sampleN)
+sampleTr = selectRanSample(dataTrk1, sampleN)
 #sampleTe = selectRanSample(dataTrkTeS, sampleN)
-dfHitCut, eveid = modules.momRCut(file1, momCutmin, momCutmax, rCut)
+dfHitCut1, dfHitCut2= moduleRNN.momRCut(file1, file2 ,momCutmin, momCutmax, rCut)
 
-eveid = dfHitCut.drop_duplicates('eventID')['eventID']
+#Selecting Eve ID
+eveId = dfHitCut1.drop_duplicates('eventID')['eventID']
 #eveidTe = dfHitCutTe.drop_duplicates('eventID')['eventID']
-print("event ID = ", eveid )
-print("Total of eventID  =", len(eveid))
-eID1 = eveid.values[11]
-eID2 = eveid.values[22]
+print("event ID = ", eveId )
 
-eID3 = eveid.values[33]
-eID4 = eveid.values[44]
+print("Total of eventID  =", len(eveId))
+eID1 = eveId.values[1]
+eID2 = eveId.values[2]
+eID3 = eveId.values[3]
+eID4 = eveId.values[4]
 
 sampleeID = (int(eID1) , int(eID2), int(eID3))
 
+momRange = range(momCutmin , momCutmax)
 
-
-#dataTrkTr1 = dataTrkTrS[(dataTrkTrS['eventID'] == sampleTr[0])]
-#dataTrkTr2 = dataTrkTrS[(dataTrkTrS['eventID'] == sampleTr[1])]
-#dataTrkTr3 = dataTrkTrS[(dataTrkTrS['eventID'] == sampleTr[2])]
-
-#dataTrkTe1 = dataTrkTeS[(dataTrkTeS['eventID'] == sampleTe[0])]
-#dataTrkTe2 = dataTrkTeS[(dataTrkTeS['eventID'] == sampleTe[1])]
-#dataTrkTe3 = dataTrkTeS[(dataTrkTeS['eventID'] == sampleTe[2])]
-
+print(momRange)
+LabelData = moduleRNN.momLabel(file1, momCutmin, momCutmax, rCut)
     
-dataTrkTr1 = dfHitCut[(dfHitCut['eventID'] == eID1)]
-dataTrkTr2 = dfHitCut[(dfHitCut['eventID'] == eID2)]
-dataTrkTr3 = dfHitCut[(dfHitCut['eventID'] == eID3)]
+dataTrkTr1 = dfHitCut1[(dfHitCut1['eventID'] == eID1)]
+dataTrkTr2 = dfHitCut1[(dfHitCut1['eventID'] == eID2)]
+dataTrkTr3 = dfHitCut1[(dfHitCut1['eventID'] == eID3)]
 
-#print(dataTrMultiSample)
-#print(dataTeMultiSample)
-#plt.show()
 def dataPre(Track1, Track2, Track3):
     TrackSum = pd.concat([Track1, Track2,Track3])
     #class_le = LabelEncoder()
-    y = TrackSum['hitPosZ'].values
-    x = TrackSum['hitTime'].values
+    z = TrackSum['hitPosZ'].values
+    t = TrackSum['hitTime'].values
     
-    y = y.tolist()
-    x = x.tolist()
+    z = z.tolist()
+    t = t.tolist()
     #TrackSum = TrackSum[TrackSum.columns.difference(['eventID'])]
     #TrackSum = TrackSum[TrackSum.columns.difference(['hitMag'])]
     #TrackSum = TrackSum[TrackSum.columns.difference(['hitAngle'])]
     #TrackSum = TrackSum[TrackSum.columns.difference(['hitR'])]
     size = len(TrackSum.index)
-    print(y)
-    print(TrackSum)
-    return TrackSum, y , x, size
+    return TrackSum, t , z, size
 
 def dataTZ(Track):
-    y = Track['hitPosZ'].values
-    x = Track['hitTime'].values
-    y = y.tolist()
-    x = x.tolist()
+    z = Track['hitPosZ'].values
+    t = Track['hitTime'].values
+    z = z.tolist()
+    t = t.tolist()
     size = len(Track.columns)
-    return y, x, size
+    return t, z, size
+
+def dataVZ(Track):
+    v = Track['VolID'].values
+    z = Track['hitPosZ'].values
+    v = v.tolist()
+    z = z.tolist()
+    size = len(Track.columns)
+    return v, z, size
+
+trackGraph, t_trainSum , z_trainSum , size_trackGraph = dataPre(dataTrkTr1, dataTrkTr2, dataTrkTr3)   
+
+trackT1 , trackZ1, trackTZSize1 = dataTZ(dataTrkTr1)
+trackT2 , trackZ2, trackTZSize2 = dataTZ(dataTrkTr2)
+trackT3 , trackZ3, trackTZSize3 = dataTZ(dataTrkTr3)
+
+trackV1 , trackZ1, trackVZSize1 = dataVZ(dataTrkTr1)
+trackV2 , trackZ2, trackVZSize2 = dataVZ(dataTrkTr2)
+trackV3 , trackZ3, trackVZSize3 = dataVZ(dataTrkTr3)
+
+volumeID = range(40)
 
 
-trackGraph, X_train_all , y_train_all , size_train_all = dataPre(dataTrkTr1, dataTrkTr2, dataTrkTr3)   
-
-X_train , y_train, size_train = dataTZ(dataTrkTr1)
-
-X_test , y_test, size_test = dataTZ(dataTrkTr2)
-
-n_all = len(X_train_all)
-print(X_train_all)
+n_all = len(volumeID)
+print(n_all)
 
 lr = 0.01
 n_hidden = 35
 epochs = 100
 
 def track_to_onehot(track):
-    start = np.zeros(shape = len(X_train_all), dtype = int)
-    end = np.zeros(shape = len(X_train_all), dtype = int)
+    start = np.zeros(shape = len(volumeID), dtype = int)
+    end = np.zeros(shape = len(volumeID), dtype = int)
     start[-2] = 1
     end[-1] = 1
     for i in track:
-        idx = X_train_all.index(i)
+        idx = volumeID.index(i)
         zero = np.zeros(shape= n_all, dtype = int)
         zero[idx] = 1
         start = np.vstack([start,zero])
@@ -137,7 +140,7 @@ def track_to_onehot(track):
     return output
 def onehot_to_track(onehot_1):
     onehot = torch.Tensor.numpy(onehot_1)
-    return X_train_all[onehot.argmax()]
+    return volumeID[onehot.argmax()]
 
 class RNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -160,12 +163,14 @@ class RNN(nn.Module):
 
 
 
-rnn = RNN(size_train_all , n_hidden , size_train_all)
+rnn = RNN(len(volumeID) , n_hidden , len(volumeID))
 
 loss_func = nn.MSELoss()
 optimizer = torch.optim.Adam(rnn.parameters() , lr = lr)
-print(X_train)
-one_hot = torch.from_numpy(track_to_onehot(X_train)).type_as(torch.FloatTensor())
+
+print(trackV1)
+
+one_hot = torch.from_numpy(track_to_onehot(trackV1)).type_as(torch.FloatTensor())
 
 for i in range(epochs):
     rnn.zero_grad()
@@ -194,35 +199,42 @@ with torch.no_grad():
     hidden = rnn.init_hidden()
     input_ = start
     output_track = []
-    for i in range(len(X_train)):
+    for i in range(len(trackV2)):
     #for i in range(len(X_train)):
         output, hidden = rnn.forward(input_, hidden)
         output_track.append(onehot_to_track(output.data))
         print(i)
         print(onehot_to_track(output.data))
         input_ = output
+
 #print(output_track)
 output_track = np.array(output_track)
 
-X_train = np.array(X_train)
+trackV2 = np.array(trackV2)
 print("=================================================")
-accuracy = sum(X_train == output_track)/  len(X_train)
+accuracy = sum(trackV2 == output_track)/  len(trackV2)
 #accuracy = sum(X_train == output_track)/ 5
 print(accuracy)
 print("=================================================")
 #print(output_track)
 
+
 def plottingMerging(fig3dN, fig2dN , data, sample):
     sampleN = len(sample)
-    fig1 = plt.figure(fig3dN, figsize =(8 , 8))
-    fig2 = plt.figure(fig2dN, figsize =(8 , 8))
-    pos3D  = fig1.add_subplot(111, projection='3d')
-    pos2DXY = fig2.add_subplot(3,2,1)
-    pos2DTZ = fig2.add_subplot(3,2,2)
-    pos2DTR = fig2.add_subplot(3,2,3)
-    pos2DTA = fig2.add_subplot(3,2,4)
-    pos2DRA = fig2.add_subplot(3,2,5)
-    pos2DRZ = fig2.add_subplot(3,2,6)
+    fig1 = plt.figure(fig3dN, figsize =(10 , 10))
+    fig2 = plt.figure(fig2dN, figsize =(10 , 10))
+    fig3 = plt.figure(3, figsize =(10 , 10))
+    pos3DXYZ  = fig1.add_subplot(111, projection='3d')
+    pos3DVTZ  = fig3.add_subplot(111, projection='3d')
+    pos2DXY = fig2.add_subplot(3,3,1)
+    pos2DTZ = fig2.add_subplot(3,3,2)
+    pos2DTR = fig2.add_subplot(3,3,3)
+    pos2DTA = fig2.add_subplot(3,3,4)
+    pos2DRA = fig2.add_subplot(3,3,5)
+    pos2DRZ = fig2.add_subplot(3,3,6)
+    pos2DVZ = fig2.add_subplot(3,3,7)
+    pos2DVR = fig2.add_subplot(3,3,8)
+    pos2DTV = fig2.add_subplot(3,3,9)
     print(sample)
     #print(sampleN)
     dataMulti = pd.DataFrame([])
@@ -230,22 +242,35 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
         print(i)
         dataTemp = data[(data['eventID'] == i)]
         print(i, "-th event Track will be plotted..")
-        c3D = pos3D.scatter(dataTemp["hitPosX"],dataTemp["hitPosY"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
+        c3D1 = pos3DXYZ.scatter(dataTemp["hitPosX"],dataTemp["hitPosY"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
+        c3D3 = pos3DVTZ.scatter(dataTemp["VolID"],dataTemp["hitTime"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
         pos2DXY. scatter(dataTemp["hitPosX"],dataTemp["hitPosY"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DTZ. scatter(dataTemp["hitTime"],dataTemp["hitPosZ"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DTR. scatter(dataTemp["hitTime"],dataTemp["hitR"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DTA. scatter(dataTemp["hitTime"],dataTemp["hitAngle"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DRA. scatter(dataTemp["hitR"],dataTemp["hitAngle"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DRZ. scatter(dataTemp["hitR"],dataTemp["hitPosZ"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 )
+        pos2DVZ. scatter(dataTemp["VolID"],dataTemp["hitPosZ"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 )
+        pos2DVR. scatter(dataTemp["VolID"],dataTemp["hitR"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 )
+        pos2DTV. scatter(dataTemp["hitTime"],dataTemp["VolID"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 )
         dataMulti  = pd.concat([dataMulti,dataTemp])
-    fig1.colorbar(c3D)
+    fig1.colorbar(c3D1)
+    fig3.colorbar(c3D3)
     #fig2.colorbar(ticks=range(sampleN), format='color: %d', label='color')
-    pos3D.set_xlabel('x [mm]')
-    pos3D.set_ylabel('y [mm]')
-    pos3D.set_zlabel('z [mm]')
-    pos3D.set_xlim( -400,400)
-    pos3D.set_ylim( -400,400)
-    pos3D.set_zlim(-400,400)
+    pos3DXYZ.set_xlabel('x [mm]')
+    pos3DXYZ.set_ylabel('y [mm]')
+    pos3DXYZ.set_zlabel('z [mm]')
+    pos3DXYZ.set_xlim( -400,400)
+    pos3DXYZ.set_ylim( -400,400)
+    pos3DXYZ.set_zlim(-400,400)
+
+    pos3DVTZ.set_xlabel('vID [vaneID]')
+    pos3DVTZ.set_ylabel('t[us]')
+    pos3DVTZ.set_zlabel('z [mm]')
+    pos3DVTZ.set_xlim( 0,40)
+    pos3DVTZ.set_ylim( 0,30)
+    pos3DVTZ.set_zlim(-400,400)
+
 
     pos2DXY.set_xlabel('X [mm]')
     pos2DXY.set_ylabel('Y [mm]')
@@ -254,17 +279,17 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
     
     pos2DTZ.set_xlabel('T [us]')
     pos2DTZ.set_ylabel('Z [mm]')
-    pos2DTZ.set_xlim(0,60)
+    pos2DTZ.set_xlim(0,30)
     pos2DTZ.set_ylim(-400,400)
     
     pos2DTR.set_xlabel('T [us]')
     pos2DTR.set_ylabel('R [mm]')
-    pos2DTR.set_xlim(0,60)
+    pos2DTR.set_xlim(0,30)
     pos2DTR.set_ylim(0,400)
     
     pos2DTA.set_xlabel('T [us]')
     pos2DTA.set_ylabel('A [degree]')
-    pos2DTA.set_xlim(0,60)
+    pos2DTA.set_xlim(0,30)
     pos2DTA.set_ylim(0,180)
     
     pos2DRA.set_xlabel('R [mm]')
@@ -276,12 +301,24 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
     pos2DRZ.set_ylabel('Z [mm]')
     pos2DRZ.set_xlim(0,400)
     pos2DRZ.set_ylim(-400,400)
-    return dataMulti
 
-#print(sampleeID)
-#print(type(sampleeID))
-#print(sampleTr)
-#print(type(sampleTr))
+    pos2DVZ.set_xlabel('vID [vaneID]')
+    pos2DVZ.set_ylabel('Z [mm]')
+    pos2DVZ.set_xlim(0,40)
+    pos2DVZ.set_ylim(-400,400)
+
+    pos2DVR.set_xlabel('vID [vaneID]')
+    pos2DVR.set_ylabel('R [mm]')
+    pos2DVR.set_xlim(0,40)
+    pos2DVR.set_ylim(0,400)
+
+    pos2DTV.set_xlabel('T [us]')
+    pos2DTV.set_ylabel('vID [vaneID]')
+    pos2DTV.set_xlim(0,30)
+    pos2DTV.set_ylim(0,40)
+
+
+    return dataMulti
 
 dataTrMultiSample = plottingMerging(1,2, trackGraph, sampleeID) 
 

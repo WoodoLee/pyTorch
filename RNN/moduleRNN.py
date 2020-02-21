@@ -64,7 +64,8 @@ def momLabel(name, momCutmin, momCutmax,Rcut):
         #dfRefer = dfHitLabelLen[['hitPosX', 'hitPosY', 'hitPosZ']]
         #dfRefer = dfRefer.iloc[0].values
         dfRefer = dfHitLabelLen.iloc[0]
-        #dfRefer['hitTime'] = 0.
+        dfRefer['hitTime'] = 0.
+        dfRefer['hitTime'] = 0.
         #dfRefer['hitR'] = 0.
         #dfRefer['hitAngle'] = 0.
         dfRefer['label'] = 0
@@ -96,10 +97,38 @@ def momLabel(name, momCutmin, momCutmax,Rcut):
     print('dfHitLabelCalib')
     print(dfHitLabelCalib)
 
-    dfHitLabelCalib = dfHitLabelCalib[1:]
+    #dfHitLabelCalib = dfHitLabelCalib[1:]
     #dfRefer = dfHitLabel.iloc[0].values
     #print('dfTest')
     #print(dfTest)
     #print('dfHitLabelCalib')
     #print(dfHitLabelCalib)
     return dfHitLabelCalib
+def momRCut( name1, name2,  momCutmin, momCutmax, Rcut):
+    f1 = ROOT.TFile.Open(name1, "read")
+    hit1 = f1.Get("Hit")
+    #print('== test line == test line == test line == test line ==')
+    dataHit1, columnsHit1 = hit1.AsMatrix(return_labels=True)
+    dfHit1 = pd.DataFrame(data=dataHit1, columns=columnsHit1)
+    #dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax)]
+    dfHitCut1 = dfHit1.loc[(dfHit1['hitPMag'] > momCutmin) &  (dfHit1['hitPMag'] < momCutmax) &
+            (dfHit1['hitTime'] > 0)]
+    dfHitRCut1 = dfHitCut1.loc[(dfHitCut1['hitR'] > Rcut)]
+    print(dfHitRCut1)
+    eID1 = dfHitRCut1["eventID"]
+    print("TrainData is ready")
+
+    f2 = ROOT.TFile.Open(name2, "read")
+    hit2 = f2.Get("Hit")
+    #print('== test line == test line == test line == test line ==')
+    dataHit2, columnsHit2 = hit2.AsMatrix(return_labels=True)
+    dfHit2 = pd.DataFrame(data=dataHit2, columns=columnsHit2)
+    #dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax)]
+    dfHitCut2 = dfHit2.loc[(dfHit2['hitPMag'] > momCutmin) &  (dfHit2['hitPMag'] < momCutmax) &
+            (dfHit2['hitTime'] > 0)]
+    dfHitRCut2 = dfHitCut2.loc[(dfHitCut2['hitR'] > Rcut)]
+    #print(dfHitCut)
+    eID2 = dfHitRCut2["eventID"]
+    print("TestData is ready")
+    #return dfHitRCut1, dfHitRCut2, eID1, eID2
+    return dfHitRCut1, dfHitRCut2

@@ -103,3 +103,19 @@ def momLabel(name, momCutmin, momCutmax,Rcut):
     #print('dfHitLabelCalib')
     #print(dfHitLabelCalib)
     return dfHitLabelCalib
+def momRCut( name, momCutmin, momCutmax, Rcut):
+    f = ROOT.TFile.Open(name, "read")
+    hit = f.Get("Hit")
+    #print('== test line == test line == test line == test line ==')
+    dataHit, columnsHit = hit.AsMatrix(return_labels=True)
+    dfHit = pd.DataFrame(data=dataHit, columns=columnsHit)
+    #dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax)]
+    dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax) &
+            (dfHit['hitTime'] > 0)]
+    print('dfHitCut = ', dfHitCut)
+    dfHitRCut = dfHitCut.loc[(dfHitCut['hitR'] > Rcut)]
+    print('dfHitRCut = ', dfHitRCut)
+    #print(dfHitCut)
+    #eID = dfHitRCut["eventID"]
+    #return dfHitRCut, eID
+    return dfHitRCut

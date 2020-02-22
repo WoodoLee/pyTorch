@@ -24,7 +24,7 @@ def momLabel(name, momCutmin, momCutmax,Rcut):
     label = momRange
     dfHitLabel = pd.DataFrame([])
     print(color.RED + "labeling", color.ENDC , end='')
-    print("label", label)
+    #print("label", label)
     for i in momRange:
         #print(color.RED + "starting Labeling..", label, "-th data is being labeled..", color.ENDC )
         print(color.RED + ".", color.ENDC, end='' )
@@ -93,8 +93,8 @@ def momLabel(name, momCutmin, momCutmax,Rcut):
             #print(color.RED + "..is done..returning values..", color.ENDC)
     #print(color.BLUE + "..", label , color.ENDC)
     #print("dfHitLabel", dfHitLabel)
-    print('dfHitLabelCalib')
-    print(dfHitLabelCalib)
+    #print('dfHitLabelCalib')
+    #print(dfHitLabelCalib)
 
     dfHitLabelCalib = dfHitLabelCalib[1:]
     #dfRefer = dfHitLabel.iloc[0].values
@@ -112,9 +112,9 @@ def momRCut( name, momCutmin, momCutmax, Rcut):
     #dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax)]
     dfHitCut = dfHit.loc[(dfHit['hitPMag'] > momCutmin) &  (dfHit['hitPMag'] < momCutmax) &
             (dfHit['hitTime'] > 0)]
-    print('dfHitCut = ', dfHitCut)
+    #print('dfHitCut = ', dfHitCut)
     dfHitRCut = dfHitCut.loc[(dfHitCut['hitR'] > Rcut)]
-    print('dfHitRCut = ', dfHitRCut)
+    #print('dfHitRCut = ', dfHitRCut)
     #print(dfHitCut)
     #eID = dfHitRCut["eventID"]
     #return dfHitRCut, eID

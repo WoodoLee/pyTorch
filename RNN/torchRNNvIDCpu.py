@@ -24,13 +24,13 @@ from torch.autograd import Variable
 
 color = pc.bcolors()
 
-file1 = "../../../../../data/eDepPhiVid/g2wd10k_1.root"
-file2 = "../../../../../data/eDepPhiVid/g2wd10k_2.root"
+file1 = "~/data/g2wd10k_1.root"
+file2 = "~/data/g2wd10k_2.root"
 
 rCut = 0
 
-momCutmin = 200
-momCutmax = 201
+momCutmin = 0   
+momCutmax = 300
 
 def selectData(file, momCutmin, momCutmax, rCut, labelID):
     LabelData = modules.momLabel(file, momCutmin, momCutmax, rCut)

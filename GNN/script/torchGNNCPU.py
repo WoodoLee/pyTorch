@@ -10,22 +10,21 @@ import matplotlib.pyplot as plt
 import moduleGNN
 import printColor as pc
 import math
-from sklearn.datasets import load_wine
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import LabelEncoder
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torch.autograd import Variable
+import matplotlib.animation as animation
+
+
+
+warnings.filterwarnings('ignore')
 
 color = pc.bcolors()
 
-file1 = "../../../../../data/eDepPhiVid/g2wd10k.root"
-
+file1 = "~/data/g2wd10k_1.root"
 rCut = 0
 
 momCutmin = 0

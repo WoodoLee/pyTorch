@@ -59,10 +59,10 @@ eveId = dfHitCut1.drop_duplicates('eventID')['eventID']
 print("event ID = ", eveId )
 
 print("Total of eventID  =", len(eveId))
-eID1 = eveId.values[1]
-eID2 = eveId.values[2]
-eID3 = eveId.values[3]
-eID4 = eveId.values[4]
+eID1 = eveId.values[11]
+eID2 = eveId.values[22]
+eID3 = eveId.values[33]
+eID4 = eveId.values[44]
 
 sampleeID = (int(eID1) , int(eID2), int(eID3))
 

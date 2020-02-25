@@ -24,12 +24,13 @@ from torch.autograd import Variable
 
 color = pc.bcolors()
 
-file1 = "../../../../../data/eDepPhiVid/g2wd10k.root"
+file1 = "~/data/eDepPhiVid/g2wd10k_1.root"
+file2 = "~/data/eDepPhiVid/g2wd10k_2.root"
 
 rCut = 0
 
-momCutmin = 0
-momCutmax = 300
+momCutmin = 200
+momCutmax = 275
 
 def selectData(file, momCutmin, momCutmax, rCut, labelID):
     LabelData = modules.momLabel(file, momCutmin, momCutmax, rCut)
@@ -58,9 +59,9 @@ eveId = dfHitCut.drop_duplicates('eventID')['eventID']
 print("event ID = ", eveId )
 
 print("Total of eventID  =", len(eveId))
-eID1 = eveId.values[110]
-eID2 = eveId.values[220]
-eID3 = eveId.values[330]
+eID1 = eveId.values[1]
+eID2 = eveId.values[2]
+eID3 = eveId.values[3]
 eID4 = eveId.values[44]
 
 sampleeID = (int(eID1) , int(eID2), int(eID3))
@@ -73,6 +74,8 @@ LabelData = moduleGNN.momLabel(file1, momCutmin, momCutmax, rCut)
 dataTrkTr1 = dfHitCut[(dfHitCut['eventID'] == eID1)]
 dataTrkTr2 = dfHitCut[(dfHitCut['eventID'] == eID2)]
 dataTrkTr3 = dfHitCut[(dfHitCut['eventID'] == eID3)]
+
+print(dataTrkTr1)
 
 def dataPre(Track1, Track2, Track3):
     TrackSum = pd.concat([Track1, Track2,Track3])
@@ -97,7 +100,6 @@ def dataTZ(Track):
     size = len(Track.columns)
     return t, z, size
 
-
 def dataVZ(Track):
     v = Track['VolID'].values
     z = Track['hitPosZ'].values
@@ -117,15 +119,6 @@ trackV1 , trackZ1, trackVZSize1 = dataVZ(dataTrkTr1)
 trackV2 , trackZ2, trackVZSize2 = dataVZ(dataTrkTr2)
 trackV3 , trackZ3, trackVZSize3 = dataVZ(dataTrkTr3)
 
-#print(LabelData)
-#for i in momRange:
-#    LabelDataSel = LabelData[(LabelData['label'] == i)]
-#    if len(LabelDataSel) ==0:
-#        continue
-#    LabelDataSel5 = LabelDataSel[0:5]
-#    print(i)
-#    #print(LabelDataSel)
-#    print(LabelDataSel5)
 
 
 def plottingMerging(fig3dN, fig2dN , data, sample):
@@ -133,8 +126,10 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
     fig1 = plt.figure(fig3dN, figsize =(10 , 10))
     fig2 = plt.figure(fig2dN, figsize =(10 , 10))
     fig3 = plt.figure(3, figsize =(10 , 10))
+    fig4 = plt.figure(4, figsize =(10 , 10))
     pos3DXYZ  = fig1.add_subplot(111, projection='3d')
     pos3DVTZ  = fig3.add_subplot(111, projection='3d')
+    pos3DVRZ  = fig4.add_subplot(111, projection='3d')
     pos2DXY = fig2.add_subplot(3,3,1)
     pos2DTZ = fig2.add_subplot(3,3,2)
     pos2DTR = fig2.add_subplot(3,3,3)
@@ -153,6 +148,7 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
         print(i, "-th event Track will be plotted..")
         c3D1 = pos3DXYZ.scatter(dataTemp["hitPosX"],dataTemp["hitPosY"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
         c3D3 = pos3DVTZ.scatter(dataTemp["VolID"],dataTemp["hitTime"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
+        c3D4 = pos3DVRZ.scatter(dataTemp["VolID"],dataTemp["hitR"],dataTemp["hitPosZ"], cmap=plt.cm.get_cmap('rainbow', sampleN), s=10)
         pos2DXY. scatter(dataTemp["hitPosX"],dataTemp["hitPosY"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DTZ. scatter(dataTemp["hitTime"],dataTemp["hitPosZ"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
         pos2DTR. scatter(dataTemp["hitTime"],dataTemp["hitR"] , cmap=plt.cm.get_cmap('rainbow', sampleN), s=10 ) 
@@ -165,6 +161,7 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
         dataMulti  = pd.concat([dataMulti,dataTemp])
     fig1.colorbar(c3D1)
     fig3.colorbar(c3D3)
+    fig4.colorbar(c3D4)
     #fig2.colorbar(ticks=range(sampleN), format='color: %d', label='color')
     pos3DXYZ.set_xlabel('x [mm]')
     pos3DXYZ.set_ylabel('y [mm]')
@@ -179,6 +176,13 @@ def plottingMerging(fig3dN, fig2dN , data, sample):
     pos3DVTZ.set_xlim( 0,40)
     pos3DVTZ.set_ylim( 0,30)
     pos3DVTZ.set_zlim(-400,400)
+
+    pos3DVRZ.set_xlabel('vID [vaneID]')
+    pos3DVRZ.set_ylabel('R [mm]')
+    pos3DVRZ.set_zlabel('z [mm]')
+    pos3DVRZ.set_xlim( 0,40)
+    pos3DVRZ.set_ylim( 0,400)
+    pos3DVRZ.set_zlim(-400,400)
 
 
     pos2DXY.set_xlabel('X [mm]')

@@ -24,12 +24,21 @@ from torch.autograd import Variable
 
 color = pc.bcolors()
 
+<<<<<<< HEAD:RNN/torchRNNvIDCpuTest.py
 file1 = "~/data/eDepPhiVid/g2wd10k_1.root"
 file2 = "~/data/eDepPhiVid/g2wd10k_2.root"
 
 rCut = 0
 
 momCutmin = 0
+=======
+file1 = "~/data/g2wd10k_1.root"
+file2 = "~/data/g2wd10k_2.root"
+
+rCut = 0
+
+momCutmin = 0   
+>>>>>>> ea4822a9f01f7c1d347755995dcab7c64625abaa:RNN/torchRNNvIDCpu.py
 momCutmax = 300
 
 def selectData(file, momCutmin, momCutmax, rCut, labelID):
@@ -59,10 +68,10 @@ eveId = dfHitCut1.drop_duplicates('eventID')['eventID']
 print("event ID = ", eveId )
 
 print("Total of eventID  =", len(eveId))
-eID1 = eveId.values[1]
-eID2 = eveId.values[2]
-eID3 = eveId.values[3]
-eID4 = eveId.values[4]
+eID1 = eveId.values[11]
+eID2 = eveId.values[22]
+eID3 = eveId.values[33]
+eID4 = eveId.values[44]
 
 sampleeID = (int(eID1) , int(eID2), int(eID3))
 

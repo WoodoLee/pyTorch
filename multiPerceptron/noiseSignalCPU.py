@@ -24,8 +24,8 @@ import noiseSignalModules
 
 color = pc.bcolors()
 
-fileName1 = "../../../../data/eDepPhi/g2wdEdep10k_1.root"
-fileName2 = "../../../../data/eDepPhi/g2wdEdep10k_2.root"
+fileName1 = "~/data/eDepPhi/g2wdEdep10k_1.root"
+fileName2 = "~/data/eDepPhi/g2wdEdep10k_2.root"
 momCutMin = 0
 momCutMax = 300 
 rCut = 100

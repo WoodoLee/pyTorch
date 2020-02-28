@@ -202,6 +202,7 @@ def threeWindows(dfMuonPos, winMin, winGap):
     
     
     def plotSel(dfSel):
+       
         pos3D.scatter(dfSel["hitPosX"],dfSel["hitPosY"],dfSel["hitPosZ"], color='red', linestyle= 'dashed', marker='o')
         pos2DXY.scatter(dfSel["hitPosX"],dfSel["hitPosY"], color='red', linestyle= 'dashed', marker='o')
         pos2DVZ.scatter(dfSel["VolID"],dfSel["hitPosZ"], color='red', linestyle= 'dashed', marker='o')

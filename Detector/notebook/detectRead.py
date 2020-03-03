@@ -25,26 +25,26 @@ def importROOT(filename):
 	return(track)
 
 def dataWindowing(track):
-    #track = importROOT("~/data/eDepPhiVid/g2wd10k_1.root")
-    eID = track['eventID']
-    eID = eID.drop_duplicates()
-    eIDNum = len(eID)
-    #print(len(track))
-    eIDNum = range(eIDNum)
+    print(color.GREEN + "dataWindowing is Starting.." + color.ENDC)
     timeWinTotal = 60e-6 # s
-    binNum = 5e-9 # s
-    timeWinNum = int(timeWinTotal / binNum)
-    #print(timeWinNum)
+    timeWinOne = 5e-8 # s
+    timeWinStep = timeWinOne*1e+6 #us
+    timeWinNum = int(timeWinTotal / timeWinOne)
     timeNum = range(timeWinNum)
     dfMuonPos = pd.DataFrame([])
-    BinRange = range(timeWinNum)
     for j in timeNum:
-        dfMuonPosTemp = track[(track['hitTime'] >= j*5e-3) & (track['hitTime'] < j*5e-3+5e-3)] 
+        dfMuonPosTemp = track[(track['hitTime'] >= j*timeWinStep) & (track['hitTime'] < (j+1)*timeWinStep)] 
         dfMuonPosTemp['timeBin'] = j
-        if (j % 1000 ==0):
-            print(j, "th window:", j*5e-3, " ~ ", j*5e-3+5e-3 ,  "[us] is creating..")
+        if (j % 100 ==0):
+            print(j, "th window:", j*timeWinStep, " ~ ", j * timeWinStep + timeWinStep ,  "[us] is creating..")
         dfMuonPosTemp = dfMuonPosTemp[['eventID', 'hitTime' , 'hitPosX', 'hitPosY' ,'hitPosZ','hitPMag','hitR','eDep','hitAngle','VolID','timeBin']]
         dfMuonPos = pd.concat([dfMuonPos, dfMuonPosTemp])
     return dfMuonPos
-#print(dfMuonPos)
+    print("dataWindowing is done..")
+
+def dataMomCut(track, momMin, momMax):
+    print("Momentum cutting.", momMin , "~" , momMax, "Range Data is selected.")
+    dfMomCut = track[(track['hitPMag'] >= momMin) & (track['hitPMag'] <= momMax)] 
+    return dfMomCut
+
 

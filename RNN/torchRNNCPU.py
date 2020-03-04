@@ -24,13 +24,8 @@ from torch.autograd import Variable
 import modules
 color = pc.bcolors()
 
-<<<<<<< HEAD
-file1 = "~/data/eDepPhi/g2wdEdep10k_1.root"
-file2 = "~/data/eDepPhi/g2wdEdep10k_2.root"
-=======
 file1 = "~/data/g2wd10k_1.root"
 file2 = "~/data/g2wd10k_2.root"
->>>>>>> ea4822a9f01f7c1d347755995dcab7c64625abaa
 
 rCut = 0
 

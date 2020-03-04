@@ -23,9 +23,8 @@ from torch.autograd import Variable
 
 color = pc.bcolors()
 
-file1 = "../../../data/eDepPhi/g2wdEdep10k_1.root"
-file2 = "../../../data/eDepPhi/g2wdEdep10k_2.root"
-
+file1 = "~/data/g2wd10k_1.root "
+file2 = "~/data/g2wd10k_2.root "
 #file2 = "../../../data/eDepPhi/g2wdEdepCut10k_2.root"
 rCut = 100
 
@@ -38,13 +37,8 @@ def selectData(file, momCutmin, momCutmax, rCut, labelID):
     print(color.GREEN + "..", len(LabelData["label"]), "- s track is in this label", color.ENDC )
     return LabelDataSel
 
-
-
-label = range[0,300]
-print(label)
-
-
-
+#label = range[0,300]
+#print(label)
 data1_1 = selectData(file1, 0, 300, 100, label1)
 data1_2 = selectData(file1, 0, 300, 100, label2)
 data1_3 = selectData(file1, 0, 300, 100, label3)

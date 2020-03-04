@@ -24,21 +24,13 @@ from torch.autograd import Variable
 
 color = pc.bcolors()
 
-<<<<<<< HEAD:RNN/torchRNNvIDCpuTest.py
-file1 = "~/data/eDepPhiVid/g2wd10k_1.root"
-file2 = "~/data/eDepPhiVid/g2wd10k_2.root"
 
-rCut = 0
-
-momCutmin = 0
-=======
 file1 = "~/data/g2wd10k_1.root"
 file2 = "~/data/g2wd10k_2.root"
 
 rCut = 0
 
 momCutmin = 0   
->>>>>>> ea4822a9f01f7c1d347755995dcab7c64625abaa:RNN/torchRNNvIDCpu.py
 momCutmax = 300
 
 def selectData(file, momCutmin, momCutmax, rCut, labelID):
